@@ -1,0 +1,3 @@
+﻿#pragma once
+
+#define _EPROCESS_IMAGE_FILE_NAME_OFFSET 0x450

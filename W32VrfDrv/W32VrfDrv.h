@@ -1,0 +1,52 @@
+﻿#pragma once
+
+#define VER_DRV_NAME	L"\\W32VrfDrv"
+
+#define DEVICE_NAME		L"\\Device\\W32VrfDrv"
+#define SYM_LINK		L"\\DosDevices\\W32VrfDrv"
+
+#define ENABLE_MEMORY_HOOK_IOCTL	CTL_CODE(FILE_DEVICE_UNKNOWN,0,METHOD_BUFFERED,FILE_ANY_ACCESS)
+#define DISABLE_MEMORY_HOOK_IOCTL	CTL_CODE(FILE_DEVICE_UNKNOWN,1,METHOD_BUFFERED,FILE_ANY_ACCESS)
+#define ADD_PROCESS_HOOK_IOCTL		CTL_CODE(FILE_DEVICE_UNKNOWN,2,METHOD_BUFFERED,FILE_ANY_ACCESS)
+#define REMOVE_PROCESS_HOOK_IOCTL	CTL_CODE(FILE_DEVICE_UNKNOWN,3,METHOD_BUFFERED,FILE_ANY_ACCESS)
+
+typedef struct _W32VRFDRV_EXT
+{
+	UNICODE_STRING	ustrSymLinkName;
+	//Путь к реестру
+	PUNICODE_STRING pRegistryPath;
+	//Устройство
+	PDEVICE_OBJECT	pHVDev;
+
+	//Синхронизация доступа к расширению
+	FAST_MUTEX		kMutex;
+
+	//RtlHeapVerifier
+	PRTLHEAP_VERIFIER	pRtlHV;
+
+	//Признак того, что девайс открыт
+	BOOL	bOpened;
+} W32VRFDRV_EXT, *PW32VRFDRV_EXT;
+
+VOID
+W32VrfDrvUnload(
+	_In_ PDRIVER_OBJECT DriverObject
+);
+
+NTSTATUS
+W32VrfDrvCreate(
+	_In_ PDEVICE_OBJECT DeviceObject,
+	_In_ PIRP pIrp
+);
+
+NTSTATUS
+W32VrfDrvClose(
+	_In_ PDEVICE_OBJECT DeviceObject,
+	_In_ PIRP pIrp
+);
+
+NTSTATUS
+W32VrfDeviceIoControl(
+	_In_ PDEVICE_OBJECT DeviceObject,
+	_In_ PIRP pIrp
+);
